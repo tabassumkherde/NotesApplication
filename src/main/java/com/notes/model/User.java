@@ -3,15 +3,23 @@
  */
 package com.notes.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Data;
 
@@ -21,13 +29,15 @@ import lombok.Data;
  */
 @Data
 @Entity
-@Table(name = "user_details")
+@Table(name = "users")
+@JsonIgnoreProperties(value = {"creationDate", "lastModifiedDate"}, 
+allowGetters = true)
 public class User extends Auditable<String> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "user_Id")
-	private Long userId;
+	private Integer userId;
 
 	@NotNull
 	@Email
@@ -40,8 +50,18 @@ public class User extends Auditable<String> {
 	@Column(name = "user_pass")
 	private String userPass;	
 
-	/*In case when we need to add Notes, when adding user
-	 * @JsonIgnore
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-	private List<Notes> noteDetails;*/
+	/*In case when we need to add Note, when adding user*/
+	@JsonIgnore
+	@OneToMany(mappedBy = "userDetails", cascade = CascadeType.ALL)
+	private List<Note> notes = new ArrayList<>();
+	
+	public void addNote(Note note) {
+		notes.add(note);
+		note.setUserDetails(this);
+    }
+ 
+    public void removeNote(Note note) {
+    	notes.remove(note);
+    	note.setUserDetails(null);
+    }
 }

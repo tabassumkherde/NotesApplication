@@ -15,10 +15,13 @@ import javax.persistence.Temporal;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import lombok.Data;
+
 /**
  * @author Tabassum
  *
  */
+@Data
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public abstract class Auditable<U> {
@@ -28,6 +31,7 @@ public abstract class Auditable<U> {
 	protected Date creationDate;
 	
 	
+	@Column(name = "lastMod_date")
 	@LastModifiedDate
 	@Temporal(TIMESTAMP)
 	protected Date lastModifiedDate;
