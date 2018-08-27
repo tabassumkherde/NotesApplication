@@ -3,67 +3,54 @@
  */
 package com.notes.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author Tabassum
  *
  */
+
 @Data
+@NoArgsConstructor
 @Entity
 @Table(name = "users")
-@JsonIgnoreProperties(value = {"creationDate", "lastModifiedDate"}, 
-allowGetters = true)
-public class User extends Auditable<String> {
+@JsonPropertyOrder({"userMail", "userPass"})
+public class User extends Auditable<String> implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "user_Id")
+	@JsonIgnore
 	private Integer userId;
 
 	@NotNull
 	@Email
 	@Size(max = 100)
 	@Column(name = "user_mail", unique = true)
+	@JsonProperty("Mail Id")
 	private String userMail;
 
 	@NotNull
 	@Size(max = 8)
-	@Column(name = "user_pass")
+	@Column(name = "user_pass")	
+	@JsonProperty("Password")
 	private String userPass;	
-
-	/*In case when we need to add Note, when adding user*/
-	@JsonIgnore
-	@OneToMany(mappedBy = "userDetails", cascade = CascadeType.ALL)
-	private List<Note> notes = new ArrayList<>();
 	
-	public void addNote(Note note) {
-		notes.add(note);
-		note.setUserDetails(this);
-		note.setUserId(this.userId);
-    }
- 
-    public void removeNote(Note note) {
-    	notes.remove(note);
-    	note.setUserDetails(null);
-    	note.setUserId(null);
-    }
 }

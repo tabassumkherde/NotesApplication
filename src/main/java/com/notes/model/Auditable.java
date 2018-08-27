@@ -12,28 +12,38 @@ import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Temporal;
 
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 /**
  * @author Tabassum
  *
  */
 @Data
+@EqualsAndHashCode
+@ToString
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public abstract class Auditable<U> {
 		
 	@Column(name = "created_date", updatable = false)
 	@Temporal(TIMESTAMP)
-	protected Date creationDate;
+	@JsonIgnore
+	@CreatedDate
+    protected Date creationDate;
 	
 	
 	@Column(name = "lastMod_date")
 	@LastModifiedDate
 	@Temporal(TIMESTAMP)
+	@JsonIgnore
 	protected Date lastModifiedDate;
 
 }
