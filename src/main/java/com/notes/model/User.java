@@ -58,10 +58,12 @@ public class User extends Auditable<String> {
 	public void addNote(Note note) {
 		notes.add(note);
 		note.setUserDetails(this);
+		note.setUserId(this.userId);
     }
  
     public void removeNote(Note note) {
     	notes.remove(note);
     	note.setUserDetails(null);
+    	note.setUserId(null);
     }
 }

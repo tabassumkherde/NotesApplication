@@ -53,9 +53,9 @@ public class Note extends Auditable<String> implements Serializable {
 	@Column(name="note_msg")
 	private String noteMsg;	
 	
-	/*@Column(name="user_id")
+	@Column(name="user_id")
 	private Integer userId;
-	*/
+	
 	/*In case of we need to maintain many notes to one User relation through User Entity*/
 	@ManyToOne
 	@JoinColumn(name="user_id")
