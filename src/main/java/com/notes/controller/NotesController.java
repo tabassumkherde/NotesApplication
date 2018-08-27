@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,10 +52,26 @@ public class NotesController extends NotesExceptionHandler {
 	public ResponseEntity<String> addNote(@PathVariable(value = "userId") Integer userId, @Valid @RequestBody Note note,
 			Errors errors) {
 		log.info("Inside Add Note");
+		if (userId == null)
+			throw new NotesException("Provide user Id");
 		validateRequest(errors);
 		String response = notesService.addNote(note, userId);
-		log.info("Response : "+response);
+		log.info("Response : " + response);
 		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
+	/**
+	 * Method to get all Notes details
+	 * 
+	 * @return ResponseEntity
+	 */
+	@ApiOperation(value = "View list of Notes by User Id")
+	@GetMapping("/{userId}")
+	public ResponseEntity<Object> getAllNotesByUser(@PathVariable(value = "userId") Integer userId) {
+		if (userId == null)
+			throw new NotesException("Provide user Id");
+
+		return new ResponseEntity<>(notesService.getAllNotesByUser(userId), HttpStatus.OK);
 	}
 
 	/**
@@ -65,7 +82,7 @@ public class NotesController extends NotesExceptionHandler {
 	private void validateRequest(Errors errors) {
 		if (errors.hasErrors()) {
 			errors.getAllErrors().stream().forEach(errorMsg -> {
-				log.debug("Error Message : "+errorMsg);
+				log.debug("Error Message : " + errorMsg);
 				throw new NotesException(errorMsg.getDefaultMessage());
 			});
 		}

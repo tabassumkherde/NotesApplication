@@ -55,4 +55,11 @@ public class NotesServiceImpl implements NotesService {
 		log.info("Successfully added new Note.");
 		return "Successfully added new Note.";
 	}
+
+	@Override
+	public Object getAllNotesByUser(Integer userId) {
+		log.info("Inside get all notes by user id service");
+		Optional<User> user = userRepository.findById(userId);
+		return user.isPresent() ? noteRepository.findNotesByUserId(userId): " Provide valid user id";
+	}
 }
