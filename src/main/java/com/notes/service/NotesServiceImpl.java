@@ -14,8 +14,7 @@ import lombok.extern.log4j.Log4j2;
 
 /**
  * 
- * @author Tabassum
- *
+ * @author Tabassum Service Implementation class for note crud operations.
  */
 @Service
 @Log4j2
@@ -43,6 +42,33 @@ public class NotesServiceImpl implements NotesService {
 	}
 
 	/**
+	 * Get all notes associated by user id. check for valid user.
+	 * 
+	 * @param userId
+	 * @return object
+	 */
+	@Override
+	public Object getAllNotesByUser(Integer userId) {
+		log.info("Inside get all notes by user id service");
+		Optional<User> user = userRepository.findById(userId);
+		return user.isPresent() ? noteRepository.findNotesByUserId(userId) : " Provide valid user id";
+	}
+
+	/**
+	 * Delete Note by verfying valid/correct user
+	 * 
+	 * @param userId
+	 * @param noteId
+	 * @return String
+	 */
+	@Override
+	public String deleteNote(Integer userId, Integer noteId) {
+		Optional<User> user = userRepository.findById(userId);
+		return user.isPresent() ? deleteNote(noteId) : " Provide valid user id";
+
+	}
+
+	/**
 	 * Method to save Note
 	 * 
 	 * @param user
@@ -56,10 +82,14 @@ public class NotesServiceImpl implements NotesService {
 		return "Successfully added new Note.";
 	}
 
-	@Override
-	public Object getAllNotesByUser(Integer userId) {
-		log.info("Inside get all notes by user id service");
-		Optional<User> user = userRepository.findById(userId);
-		return user.isPresent() ? noteRepository.findNotesByUserId(userId): " Provide valid user id";
+	/**
+	 * Delete Note
+	 * 
+	 * @param noteId
+	 * @return
+	 */
+	private String deleteNote(Integer noteId) {
+		noteRepository.deleteById(noteId);
+		return "Deleted note with noteId: " + noteId;
 	}
 }
