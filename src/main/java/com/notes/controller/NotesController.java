@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +24,7 @@ import com.notes.model.Note;
 import com.notes.service.NotesService;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.log4j.Log4j2;
 
@@ -51,6 +53,7 @@ public class NotesController extends NotesExceptionHandler {
 	 */
 	@ApiOperation(value = "Add New Note")
 	@PostMapping("/add/{userId}/note")
+	@ApiModelProperty(hidden=true)
 	public ResponseEntity<String> addNote(@PathVariable(value = "userId") Integer userId, @Valid @RequestBody Note note,
 			Errors errors) {
 		log.info("Inside Add Note controller.");
@@ -92,6 +95,27 @@ public class NotesController extends NotesExceptionHandler {
 		userIdNullCheck(userId);
 		String response = notesService.deleteNote(userId, noteId);
 		log.info("Response of deleteNote : " + response);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+	
+	/**
+	 * Method to update employee details
+	 * 
+	 * @param employee
+	 * @param id
+	 * @param errors
+	 * @return ResponseEntity
+	 */
+	@ApiOperation(value = "Update Note")	
+	@PutMapping("/{userId}/note")
+	public ResponseEntity<String> updateNote( @PathVariable(value = "userId") Integer userId, @Valid @RequestBody Note note,
+			Errors errors) {
+
+		validateRequest(errors);
+		log.info("Inside  controller:: updateNote.");
+		userIdNullCheck(userId);
+		String response = notesService.updateNote(note, userId);
+		log.info("Response of updateNote : " + response);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 

@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import io.swagger.annotations.ApiParam;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 /**
@@ -32,15 +33,15 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name="Notes")
 @JsonPropertyOrder({"title", "noteMsg"})
-@JsonIgnoreProperties(value = {"noteId"}, allowGetters = true)
+//@JsonIgnoreProperties(value = {"noteId"}, allowGetters = true)
 public class Note extends Auditable<String> implements Serializable {	
 	
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@ApiParam(hidden = true)
 	@Column(name="note_Id")
-	@JsonIgnore
 	private Integer noteId;
 	
 	@NotEmpty(message = "Provide title") @NotBlank(message = "Provide title")

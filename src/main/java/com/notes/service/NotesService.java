@@ -1,5 +1,7 @@
 package com.notes.service;
 
+import javax.validation.Valid;
+
 import com.notes.model.Note;
 
 /**
@@ -13,5 +15,7 @@ public interface NotesService {
 
 	Object getAllNotesByUser(Integer userId);
 
-	String deleteNote(Integer userId, Integer noteId);	
+	String deleteNote(Integer userId, Integer noteId);
+
+	String updateNote(Note note, Integer userId);	
 }
