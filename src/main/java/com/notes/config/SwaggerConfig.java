@@ -26,7 +26,7 @@ public class SwaggerConfig {
 	@Bean
 	public Docket empConfigApi() {
 		return new Docket(DocumentationType.SWAGGER_2).apiInfo(apiInfo()).pathMapping("/").select()
-				.paths(regex("/notes.*")).build();
+				.paths(regex("/api.*")).build();
 	}
 
 	/**

@@ -1,11 +1,15 @@
 package com.notes.service;
 
-import java.util.Optional;
+import java.util.List;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.notes.exception.NotesException;
 import com.notes.model.Note;
+import com.notes.model.NoteBase;
 import com.notes.model.User;
 import com.notes.repository.NotesRepository;
 import com.notes.repository.UserRepository;
@@ -28,6 +32,19 @@ public class NotesServiceImpl implements NotesService {
 	private UserRepository userRepository;
 
 	/**
+	 * Get all notes associated by user id. check for valid user.
+	 * 
+	 * @param userId
+	 * @return object
+	 */
+	@Override
+	public List<Note> getAllNotesByUserId(Long userId) {
+		log.info("Inside get all notes by user id service");
+		validateUser(userId);
+		return noteRepository.findNotesByUserId(userId);
+	}
+
+	/**
 	 * Adding note by validating user id
 	 * 
 	 * @param note
@@ -35,66 +52,30 @@ public class NotesServiceImpl implements NotesService {
 	 * @return
 	 */
 	@Override
-	public String addNote(Note note, Integer userId) {
+	public String addNote(Long userId, NoteBase note) {
 		log.info("Inside add note service");
-		Optional<User> user = userRepository.findById(userId);
-		return user.isPresent() ? saveUser(user.get(), note) : ApplicationConstants.VALIDATION_USER_ID;
-
+		User user = validateUser(userId);
+		return saveUser(user, note);
 	}
 
-	/**
-	 * Get all notes associated by user id. check for valid user.
-	 * 
-	 * @param userId
-	 * @return object
-	 */
 	@Override
-	public Object getAllNotesByUser(Integer userId) {
-		log.info("Inside get all notes by user id service");
-		Optional<User> user = userRepository.findById(userId);
-		return user.isPresent() ? noteRepository.findNotesByUserId(userId) : ApplicationConstants.VALIDATION_USER_ID;
+	public Note updateNote(Long userId, Long noteId, @Valid NoteBase note) {
+		Note dbNote = validateNoteByUser(userId, noteId);
+		dbNote.setTitle(note.getTitle());
+		dbNote.setMessage(note.getMessage());
+		return noteRepository.save(dbNote);
 	}
 
 	/**
-	 * Delete Note by verfying valid/correct user
+	 * Delete Note
 	 * 
-	 * @param userId
 	 * @param noteId
-	 * @return String
-	 */
-	@Override
-	public String deleteNote(Integer userId, Integer noteId) {
-		Optional<User> user = userRepository.findById(userId);
-		return user.isPresent() ? deleteNote(noteId) : ApplicationConstants.VALIDATION_USER_ID;
-
-	}
-	
-	/**
-	 * To delete note by user id
-	 */
-	@Override
-	public String updateNote(Note note, Integer userId) {
-		Optional<User> user = userRepository.findById(userId);
-		if(note.getNoteId() == null){
-			return ApplicationConstants.VALIDATION_NOTE_ID;
-		}
-		Optional<Note> dbNote = noteRepository.findById(note.getNoteId());
-		return user.isPresent() && dbNote.isPresent() ? updateNote(user.get(), note) : ApplicationConstants.VALIDATION_UPDATE_NOTE_DATA;
-		
-	}
-	
-	/**
-	 * Method to update Note
-	 * 
-	 * @param user
-	 * @param note
 	 * @return
 	 */
-	private String updateNote(User user, Note note) {
-		note.setUserDetails(user);
-		noteRepository.save(note);
-		log.info("Successfully updated new Note.");
-		return "Successfully updated new Note.";
+	public String deleteNote(Long userId, Long noteId) {
+		Note dbNote = validateNoteByUser(userId, noteId);
+		noteRepository.deleteById(noteId);
+		return String.format(ApplicationConstants.DELETE_ID, noteId);
 	}
 
 	/**
@@ -104,22 +85,21 @@ public class NotesServiceImpl implements NotesService {
 	 * @param note
 	 * @return
 	 */
-	private String saveUser(User user, Note note) {
-		note.setUserDetails(user);
-		noteRepository.save(note);
+	private String saveUser(User user, NoteBase note) {
+		Note dbNote = Note.builder().title(note.getTitle()).message(note.getMessage()).userDetails(user).build();
+		noteRepository.save(dbNote);
 		log.info("Successfully added new Note.");
-		return "Successfully added new Note.";
+		return ApplicationConstants.ADDED_NOTE_DESC;
 	}
 
-	/**
-	 * Delete Note
-	 * 
-	 * @param noteId
-	 * @return
-	 */
-	private String deleteNote(Integer noteId) {
-		noteRepository.deleteById(noteId);
-		return "Deleted note with noteId: " + noteId;
+	private User validateUser(Long userId) {
+		return userRepository.findById(userId)
+				.orElseThrow(() -> new NotesException(ApplicationConstants.VALIDATION_USER_ID));
 	}
-	
+
+	private Note validateNoteByUser(Long userId, Long noteId) {
+		return noteRepository.findByNoteIdAndUserId(noteId, userId)
+				.orElseThrow(() -> new NotesException(ApplicationConstants.NOTE_ID_NOTEXIST));
+	}
+
 }

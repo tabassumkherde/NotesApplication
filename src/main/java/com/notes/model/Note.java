@@ -10,16 +10,12 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.swagger.annotations.ApiParam;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 /**
@@ -30,11 +26,10 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name="Notes")
-@JsonPropertyOrder({"title", "noteMsg"})
-//@JsonIgnoreProperties(value = {"noteId"}, allowGetters = true)
-public class Note extends Auditable<String> implements Serializable {	
+public class Note extends NoteBase implements Serializable   {	
 	
 	private static final long serialVersionUID = 1L;
 
@@ -42,19 +37,7 @@ public class Note extends Auditable<String> implements Serializable {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@ApiParam(hidden = true)
 	@Column(name="note_Id")
-	private Integer noteId;
-	
-	@NotEmpty(message = "Provide title") @NotBlank(message = "Provide title")
-	@Size(max = 15)
-	@JsonProperty("Note Title")
-	@Column(name="title")
-
-	private String title;
-	
-	@Size(max = 1000)
-	@Column(name="note_msg")
-	@JsonProperty("Note Message")
-	private String noteMsg;	
+	private Long noteId;
 	
 	
 	/*In case of we need to maintain many notes to one User relation through User Entity*/
@@ -62,4 +45,12 @@ public class Note extends Auditable<String> implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="user_id")
 	private User userDetails;
+
+	@Builder
+	public Note(String title, String message, User userDetails) {
+		super(title, message);
+		this.userDetails = userDetails;
+	}	
 }
+
+

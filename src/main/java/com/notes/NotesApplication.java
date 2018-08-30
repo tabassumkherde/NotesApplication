@@ -28,14 +28,9 @@ public class NotesApplication implements CommandLineRunner {
 	@Override
     public void run(String... arg0) throws Exception {
 		User user = new User();
-		user.setUserMail("abc@gmail.com");
-		user.setUserPass("33323");		
+		user.setUserMail("tom.croock@gmail.com");
+		user.setUserPass("tom@1234");		
 		userRepo.save(user);
-		
-		Note note = new Note();
-		note.setTitle("Note 1");
-		note.setNoteMsg("Note 1");
-		noteRepo.save(note);
 		
 	}
 
