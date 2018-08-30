@@ -43,11 +43,16 @@ Password:root
 ## Explore Rest APIs
 The app defines following CRUD APIs.
 
-GET  	/api/notes/{userId}
-POST 	/api/notes/{userId}
-PUT  	/api/notes/{userId}/{noteId}
-DELETE 	/api /notes/{userId}/{noteId}
+```
+    GET /api/notes/{userId}
+    
+    POST /api/notes/{userId}
+    
+    PUT /api/notes/{userId}/{noteId}
+    
+    DELETE /api/notes/{userId}/{noteId}
 
+```
 
 ## Test Rest APIs
 
@@ -57,8 +62,9 @@ Swagger documentation is available at <http://localhost:8080/swagger-ui.html>.
 
 System inserted one default users into the database on start.
 
-Once application is up user can perfrom below operation add new note using 
-
+Once application is up user can perform below operation add new note using
+ 
+```
 Add Note:
 url : http://localhost:8080/swagger-ui.html#!/notes45controller/addNoteUsingPOST
 
@@ -70,6 +76,8 @@ url : http://localhost:8080/swagger-ui.html#!/notes45controller/updateNoteUsingP
 
 Delete Note:
 url : http://localhost:8080/swagger-ui.html#!/notes45controller/deleteNoteUsingDELETE
+
+```
 
 Swagger do provide the example value and try button to test api
 
